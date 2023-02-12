@@ -44,5 +44,5 @@ type RedisConfig struct {
 }
 
 type Jwt struct {
-	secret string
+	Secret string
 }
