@@ -1,12 +1,10 @@
 package database
 
-import "github.com/google/uuid"
-
 type User struct {
-	ID        uuid.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
-	FirstName string    `gorm:"type:varchar(100);not null"`
-	LastName  string    `gorm:"type:varchar(100);not null"`
-	Email     string    `gorm:"type:varchar(100);not null;unique"`
-	Password  string    `gorm:"type:varchar(100);not null"`
-	Role      bool      `gorm:"type:varchar(100);not null"`
+	ID        uint   `gorm:"primaryKey"`
+	FirstName string `gorm:"type:varchar(100);not null" json:"first_name""`
+	LastName  string `gorm:"type:varchar(100);not null" json:"last_name"`
+	Email     string `gorm:"type:varchar(100);not null;unique" json:"email"`
+	Password  string `gorm:"type:varchar(100);not null" json:"password"`
+	Role      bool   `gorm:"type:bool;not null" json:"role"`
 }

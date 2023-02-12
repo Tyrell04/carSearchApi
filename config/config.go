@@ -19,7 +19,6 @@ func GetConfig() *Config {
 	if err != nil {
 		log.Fatalf("Error in parse config %v", err)
 	}
-
 	return cfg
 }
 
@@ -53,9 +52,9 @@ func LoadConfig(filename string, fileType string) (*viper.Viper, error) {
 func getConfigPath(env string) string {
 	if env == "docker" {
 		return "config/config-docker"
-	} else if env == "production" {
-		return "config/config-production"
+	} else if env == "development" {
+		return "config/config-development"
 	} else {
-		return "../config/config-development"
+		panic("Set APP_ENV to docker or development")
 	}
 }
