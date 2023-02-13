@@ -12,8 +12,7 @@ import (
 )
 
 func main() {
-	var cfg *config.Config
-	cfg = config.GetConfig()
+	cfg := config.GetConfig()
 	if !fiber.IsChild() {
 		log.Println("Main process started")
 		err := cache.InitRedis(cfg)

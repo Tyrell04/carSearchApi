@@ -21,5 +21,8 @@ func SetupRoutes(app *fiber.App, port string) {
 	health := api.Group("/health")
 	routes.HealthRoutes(health)
 	routes.UserRoutes(user)
-	app.Listen(":" + port)
+	err := app.Listen(":" + port)
+	if err != nil {
+		return
+	}
 }
