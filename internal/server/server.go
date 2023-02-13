@@ -9,7 +9,7 @@ import (
 func NewServer(cfg *config.Config) *fiber.App {
 	app := fiber.New(
 		fiber.Config{
-			//Prefork: true,
+			Prefork: true,
 		})
 	SetupRoutes(app, cfg.Server.Port)
 	return app

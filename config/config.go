@@ -52,9 +52,7 @@ func LoadConfig(filename string, fileType string) (*viper.Viper, error) {
 func getConfigPath(env string) string {
 	if env == "docker" {
 		return "config/config-docker"
-	} else if env == "development" {
-		return "config/config-development"
 	} else {
-		panic("Set APP_ENV to docker or development")
+		return "config/config-development"
 	}
 }

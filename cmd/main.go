@@ -12,11 +12,10 @@ import (
 )
 
 func main() {
-	if fiber.IsChild() {
-		log.Println("Child process started")
-	} else {
+	var cfg *config.Config
+	cfg = config.GetConfig()
+	if !fiber.IsChild() {
 		log.Println("Main process started")
-		cfg := config.GetConfig()
 		err := cache.InitRedis(cfg)
 		defer cache.CloseRedis()
 		if err != nil {
@@ -27,7 +26,6 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		server.NewServer(cfg)
 	}
-
+	server.NewServer(cfg)
 }
