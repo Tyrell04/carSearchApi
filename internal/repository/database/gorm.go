@@ -6,6 +6,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
+	"time"
 )
 
 var dbClient *gorm.DB
@@ -27,16 +28,15 @@ func InitDb(cfg *config.Config) error {
 		return err
 	}
 
-	//sqlDb.SetMaxIdleConns(cfg.Database.MaxIdleConns)
-	//sqlDb.SetMaxOpenConns(cfg.Database.MaxOpenConns)
-	//sqlDb.SetConnMaxLifetime(cfg.Database.ConnMaxLifetime * time.Minute)
+	sqlDb.SetMaxIdleConns(cfg.Database.MaxIdleConns)
+	sqlDb.SetMaxOpenConns(cfg.Database.MaxOpenConns)
+	sqlDb.SetConnMaxLifetime(cfg.Database.ConnMaxLifetime * time.Minute)
 
 	log.Println("Db connection established")
 	err = dbClient.AutoMigrate(&User{})
 	if err != nil {
 		return err
 	}
-	log.Println(err)
 	return nil
 }
 
@@ -46,5 +46,8 @@ func GetDb() *gorm.DB {
 
 func CloseDb() {
 	con, _ := dbClient.DB()
-	con.Close()
+	err := con.Close()
+	if err != nil {
+		log.Fatal("Error while shutdown: ", err)
+	}
 }
