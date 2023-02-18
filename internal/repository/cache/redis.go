@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/marcleonschulz/carSearchApi/config"
+	"github.com/marcleonschulz/carSearchApi/exception"
 	"github.com/redis/go-redis/v9"
 	"time"
 )
@@ -14,7 +15,7 @@ var (
 	ctx         = context.Background()
 )
 
-func InitRedis(cfg *config.Config) error {
+func InitRedis(cfg *config.Config) {
 	redisClient = redis.NewClient(&redis.Options{
 		Addr:         fmt.Sprintf("%s:%s", cfg.Redis.Host, cfg.Redis.Port),
 		Password:     cfg.Redis.Password,
@@ -27,10 +28,7 @@ func InitRedis(cfg *config.Config) error {
 	})
 
 	_, err := redisClient.Ping(ctx).Result()
-	if err != nil {
-		return err
-	}
-	return nil
+	exception.PanicLogging(err)
 }
 
 func GetRedis() *redis.Client {

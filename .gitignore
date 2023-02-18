@@ -2,3 +2,4 @@
 .idea
 # production config
 config/config-production.yml
+data
