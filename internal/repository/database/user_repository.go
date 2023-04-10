@@ -1,8 +1,13 @@
 package database
 
-import "github.com/marcleonschulz/carSearchApi/entity"
+import (
+	"context"
+	"github.com/marcleonschulz/carSearchApi/entity"
+)
 
 type UserRepository interface {
 	GetByEmail(email string) entity.User
-	Create(username string, password string, roles []string)
+	GetByUsername(username string) entity.User
+	Create(username string, password string, email string, roles []string)
+	Authentication(ctx context.Context, username string) (entity.User, error)
 }
