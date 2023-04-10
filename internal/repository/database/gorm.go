@@ -29,7 +29,7 @@ func InitDb(cfg *config.Config) {
 	sqlDb.SetConnMaxLifetime(cfg.Database.ConnMaxLifetime * time.Minute)
 
 	log.Println("Db connection established")
-	err = dbClient.AutoMigrate(&entity.User{})
+	err = dbClient.AutoMigrate(&entity.User{}, &entity.UserRole{})
 	exception.PanicLogging(err)
 
 }
