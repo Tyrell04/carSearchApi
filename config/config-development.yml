@@ -25,3 +25,4 @@ redis:
   idleCheckFrequency: 500
 jwt:
   secret: "mySecretKey"
+  access_token_expire_duration: 1000
