@@ -1,6 +1,8 @@
 package impl
 
 import (
+	"context"
+	"errors"
 	"github.com/google/uuid"
 	"github.com/marcleonschulz/carSearchApi/entity"
 	"github.com/marcleonschulz/carSearchApi/exception"
@@ -17,18 +19,19 @@ type userRepositoryImpl struct {
 	*gorm.DB
 }
 
-func (userRepository *userRepositoryImpl) Create(username string, password string, roles []string) {
+func (userRepository *userRepositoryImpl) Create(username string, password string, email string, roles []string) {
 	var userRoles []entity.UserRole
 	for _, role := range roles {
 		userRoles = append(userRoles, entity.UserRole{
-			Id:       uuid.New(),
-			Username: username,
-			Role:     role,
+			Id:    uuid.New(),
+			Email: email,
+			Role:  role,
 		})
 	}
 	user := entity.User{
 		Username:  username,
 		Password:  utils.HashPassword(password),
+		Email:     email,
 		IsActive:  true,
 		UserRoles: userRoles,
 	}
@@ -40,5 +43,28 @@ func (userRepository *userRepositoryImpl) GetByEmail(email string) entity.User {
 	var user entity.User
 	err := userRepository.DB.Where("username = ?", email).First(&user).Error
 	exception.PanicLogging(err)
+	err = userRepository.DB.Model(&user).Association("UserRoles").Find(&user.UserRoles)
+	exception.PanicLogging(err)
 	return user
+}
+
+func (userRepository *userRepositoryImpl) GetByUsername(username string) entity.User {
+	var user entity.User
+	err := userRepository.DB.Where("username = ?", username).First(&user).Error
+	exception.PanicLogging(err)
+	err = userRepository.DB.Model(&user).Association("UserRoles").Find(&user.UserRoles)
+	exception.PanicLogging(err)
+	return user
+}
+
+func (userRepository *userRepositoryImpl) Authentication(ctx context.Context, username string) (entity.User, error) {
+	var userResult entity.User
+	result := userRepository.DB.WithContext(ctx).
+		Preload("UserRoles").
+		Where("tb_user.username = ? and tb_user.is_active = ?", username, true).
+		Find(&userResult)
+	if result.RowsAffected == 0 {
+		return entity.User{}, errors.New("user not found")
+	}
+	return userResult, nil
 }
