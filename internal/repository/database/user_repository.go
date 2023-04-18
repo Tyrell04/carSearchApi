@@ -9,5 +9,5 @@ type UserRepository interface {
 	GetByEmail(email string) entity.User
 	GetByUsername(username string) entity.User
 	Create(username string, password string, email string, roles []string)
-	Authentication(ctx context.Context, username string) (entity.User, error)
+	Authentication(ctx context.Context, email string) (entity.User, error)
 }

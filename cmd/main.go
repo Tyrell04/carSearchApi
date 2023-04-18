@@ -20,18 +20,22 @@ func main() {
 
 	// register repositories
 	userRepository := repository.NewUserRepositoryImpl(database.GetDb())
+	carRepository := repository.NewCarRepositoryImpl(database.GetDb())
 
 	// register services
 	userService := services.NewUserServiceImpl(&userRepository)
+	carService := services.NewCarServiceImpl(&carRepository)
 
 	// register controllers
 	userController := controller.NewUserController(&userService, config.New())
+	carContoller := controller.NewCarController(&carService, config.New())
 
 	app := fiber.New()
 	app.Use(recover.New())
 	app.Use(cors.New())
 
 	userController.Route(app)
+	carContoller.Route(app)
 	err := app.Listen(":" + cfg.Server.Port)
 	exception.PanicLogging(err)
 }

@@ -41,7 +41,7 @@ func (userRepository *userRepositoryImpl) Create(username string, password strin
 
 func (userRepository *userRepositoryImpl) GetByEmail(email string) entity.User {
 	var user entity.User
-	err := userRepository.DB.Where("username = ?", email).First(&user).Error
+	err := userRepository.DB.Where("email = ?", email).First(&user).Error
 	exception.PanicLogging(err)
 	err = userRepository.DB.Model(&user).Association("UserRoles").Find(&user.UserRoles)
 	exception.PanicLogging(err)
@@ -57,11 +57,11 @@ func (userRepository *userRepositoryImpl) GetByUsername(username string) entity.
 	return user
 }
 
-func (userRepository *userRepositoryImpl) Authentication(ctx context.Context, username string) (entity.User, error) {
+func (userRepository *userRepositoryImpl) Authentication(ctx context.Context, email string) (entity.User, error) {
 	var userResult entity.User
 	result := userRepository.DB.WithContext(ctx).
 		Preload("UserRoles").
-		Where("tb_user.username = ? and tb_user.is_active = ?", username, true).
+		Where("tb_user.email = ? and tb_user.is_active = ?", email, true).
 		Find(&userResult)
 	if result.RowsAffected == 0 {
 		return entity.User{}, errors.New("user not found")

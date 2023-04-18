@@ -26,8 +26,8 @@ func (controller *UserController) Route(app *fiber.App) {
 }
 
 func (controller *UserController) Get(c *fiber.Ctx) error {
-	username := c.Locals("username").(string)
-	user := controller.UserService.GetByUsername(username)
+	email := c.Locals("email").(string)
+	user := controller.UserService.GetByEmail(email)
 	return c.JSON(user.ToResponse())
 }
 
@@ -51,10 +51,10 @@ func (controller UserController) Authentication(c *fiber.Ctx) error {
 			"role": userRole.Role,
 		})
 	}
-	tokenJwtResult := common.GenerateToken(result.Username, userRoles, controller.Config.Get())
+	tokenJwtResult := common.GenerateToken(result.Email, userRoles, controller.Config.Get())
 	resultWithToken := map[string]interface{}{
 		"token":    tokenJwtResult,
-		"username": result.Username,
+		"username": result.Email,
 		"role":     userRoles,
 	}
 	return c.Status(fiber.StatusOK).JSON(models.GeneralResponse{

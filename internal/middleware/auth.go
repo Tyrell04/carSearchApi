@@ -58,8 +58,8 @@ func AuthenticateUser(config config.Config) func(*fiber.Ctx) error {
 		SuccessHandler: func(ctx *fiber.Ctx) error {
 			user := ctx.Locals("user").(*jwt.Token)
 			claims := user.Claims.(jwt.MapClaims)
-			username := claims["username"].(string)
-			ctx.Locals("username", username)
+			email := claims["email"].(string)
+			ctx.Locals("email", email)
 			return ctx.Next()
 		},
 		ErrorHandler: func(c *fiber.Ctx, err error) error {

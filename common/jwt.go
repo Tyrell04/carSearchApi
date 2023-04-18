@@ -7,13 +7,13 @@ import (
 	"time"
 )
 
-func GenerateToken(username string, roles []map[string]interface{}, config config.Config) string {
+func GenerateToken(email string, roles []map[string]interface{}, config config.Config) string {
 	jwtSecret := config.Jwt.Secret
 
 	claims := jwt.MapClaims{
-		"username": username,
-		"roles":    roles,
-		"exp":      time.Now().Add(time.Minute * time.Duration(config.Jwt.AccessTokenExpireDuration)).Unix(),
+		"email": email,
+		"roles": roles,
+		"exp":   time.Now().Add(time.Minute * time.Duration(config.Jwt.AccessTokenExpireDuration)).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenSigned, err := token.SignedString([]byte(jwtSecret))
