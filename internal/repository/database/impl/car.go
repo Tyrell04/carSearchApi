@@ -26,6 +26,13 @@ func (carRepository *carRepositoryImpl) GetByHsnTsn(hsn string, tsn string) (ent
 	return car, haendler
 }
 
+func (carRepository *carRepositoryImpl) GetByHsn(hsn string) entity.Haendler {
+	var haendler entity.Haendler
+	err := carRepository.DB.Where("hsn = ?", hsn).Find(&haendler).Error
+	exception.PanicLogging(err)
+	return haendler
+}
+
 func (carRepository *carRepositoryImpl) Create(hsn string, tsn string, name string, haendlerName string) {
 	var car entity.Car
 	var haendler entity.Haendler

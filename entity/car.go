@@ -1,6 +1,9 @@
 package entity
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"github.com/marcleonschulz/carSearchApi/pkg/models"
+)
 
 type Haendler struct {
 	Id   uuid.UUID `gorm:"primaryKey;column:haendler_id;type:varchar(36)"`
@@ -14,4 +17,26 @@ type Car struct {
 	Tsn        string    `gorm:"column:tsn;type:varchar(10)"`
 	Name       string    `gorm:"column:name;type:varchar(100)"`
 	HaendlerId uuid.UUID `gorm:"column:haendler_id;type:varchar(36)"`
+}
+
+func (Haendler) TableName() string {
+	return "haendler"
+}
+
+func (Car) TableName() string {
+	return "car"
+}
+
+func (car Car) ToResponse() models.CarResponse {
+	return models.CarResponse{
+		Tsn:  car.Tsn,
+		Name: car.Name,
+	}
+}
+
+func (haendler Haendler) ToResponse() models.HaendlerResponse {
+	return models.HaendlerResponse{
+		Name: haendler.Name,
+		Hsn:  haendler.Hsn,
+	}
 }

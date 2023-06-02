@@ -4,5 +4,6 @@ import "github.com/marcleonschulz/carSearchApi/entity"
 
 type CarService interface {
 	GetByHsnTsn(hsn string, tsn string) (entity.Car, entity.Haendler)
+	GetByHsn(hsn string) entity.Haendler
 	Create(hsn string, tsn string, name string, haendlerName string)
 }

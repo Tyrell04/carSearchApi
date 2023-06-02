@@ -28,8 +28,8 @@ func (carController *CarController) GetByHsnTsn(c *fiber.Ctx) error {
 	tsn := c.Params("tsn")
 	car, haendler := carController.CarService.GetByHsnTsn(hsn, tsn)
 	return c.JSON(fiber.Map{
-		"car":      car,
-		"haendler": haendler,
+		"car":      car.ToResponse(),
+		"haendler": haendler.ToResponse(),
 	})
 }
 
@@ -39,4 +39,12 @@ func (carController *CarController) Create(c *fiber.Ctx) error {
 	exception.PanicLogging(err)
 	carController.CarService.Create(car.Hsn, car.Tsn, car.Name, car.HaendlerName)
 	return c.JSON(fiber.Map{"message": "Car created successfully!"})
+}
+
+func (carController *CarController) GetByHsn(c *fiber.Ctx) error {
+	hsn := c.Params("hsn")
+	haendler := carController.CarService.GetByHsn(hsn)
+	return c.JSON(fiber.Map{
+		"haendler": haendler.ToResponse(),
+	})
 }

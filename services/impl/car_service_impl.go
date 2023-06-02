@@ -21,3 +21,7 @@ func (carService *carServiceImpl) GetByHsnTsn(hsn string, tsn string) (entity.Ca
 func (carService *carServiceImpl) Create(hsn string, tsn string, name string, haendlerName string) {
 	carService.CarRepository.Create(hsn, tsn, name, haendlerName)
 }
+
+func (carService *carServiceImpl) GetByHsn(hsn string) entity.Haendler {
+	return carService.CarRepository.GetByHsn(hsn)
+}
