@@ -26,7 +26,10 @@ func (carController *CarController) Route(app *fiber.App) {
 func (carController *CarController) GetByHsnTsn(c *fiber.Ctx) error {
 	hsn := c.Params("hsn")
 	tsn := c.Params("tsn")
-	car, haendler := carController.CarService.GetByHsnTsn(hsn, tsn)
+	car, haendler, err := carController.CarService.GetByHsnTsn(hsn, tsn)
+	if err != nil {
+		panic(exception.NotFoundError{Message: err.Error()})
+	}
 	return c.JSON(fiber.Map{
 		"car":      car.ToResponse(),
 		"haendler": haendler.ToResponse(),
@@ -43,7 +46,10 @@ func (carController *CarController) Create(c *fiber.Ctx) error {
 
 func (carController *CarController) GetByHsn(c *fiber.Ctx) error {
 	hsn := c.Params("hsn")
-	haendler := carController.CarService.GetByHsn(hsn)
+	haendler, err := carController.CarService.GetByHsn(hsn)
+	if err != nil {
+		panic(exception.NotFoundError{Message: err.Error()})
+	}
 	return c.JSON(fiber.Map{
 		"haendler": haendler.ToResponse(),
 	})

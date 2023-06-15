@@ -32,14 +32,9 @@ func (userService *userServiceImpl) GetByUsername(username string) entity.User {
 
 func (userService *userServiceImpl) Authentication(ctx context.Context, model models.UserModel) entity.User {
 	userResult, err := userService.UserRepository.Authentication(ctx, model.Email)
-	if err != nil {
+	if !utils.CheckPasswordHash(model.Password, userResult.Password) || err != nil {
 		panic(exception.UnauthorizedError{
-			Message: err.Error(),
-		})
-	}
-	if !utils.CheckPasswordHash(model.Password, userResult.Password) {
-		panic(exception.UnauthorizedError{
-			Message: "password is not match",
+			Message: "Invalid credentials",
 		})
 	}
 	return userResult

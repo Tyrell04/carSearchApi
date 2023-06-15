@@ -7,7 +7,6 @@ import (
 	"github.com/marcleonschulz/carSearchApi/config"
 	"github.com/marcleonschulz/carSearchApi/controller"
 	"github.com/marcleonschulz/carSearchApi/exception"
-	"github.com/marcleonschulz/carSearchApi/internal/repository/cache"
 	"github.com/marcleonschulz/carSearchApi/internal/repository/database"
 	repository "github.com/marcleonschulz/carSearchApi/internal/repository/database/impl"
 	services "github.com/marcleonschulz/carSearchApi/services/impl"
@@ -16,7 +15,6 @@ import (
 func main() {
 	cfg := config.New().Get()
 	database.InitDb(&cfg)
-	cache.InitRedis(&cfg)
 
 	// register repositories
 	userRepository := repository.NewUserRepositoryImpl(database.GetDb())
@@ -30,7 +28,11 @@ func main() {
 	userController := controller.NewUserController(&userService, config.New())
 	carContoller := controller.NewCarController(&carService, config.New())
 
-	app := fiber.New()
+	app := fiber.New(
+		fiber.Config{
+			ErrorHandler: exception.ErrorHandler,
+			Prefork:      true,
+		})
 	app.Use(recover.New())
 	app.Use(cors.New())
 

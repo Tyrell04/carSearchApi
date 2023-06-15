@@ -1,6 +1,7 @@
 package impl
 
 import (
+	"errors"
 	"github.com/google/uuid"
 	"github.com/marcleonschulz/carSearchApi/entity"
 	"github.com/marcleonschulz/carSearchApi/exception"
@@ -16,21 +17,24 @@ type carRepositoryImpl struct {
 	*gorm.DB
 }
 
-func (carRepository *carRepositoryImpl) GetByHsnTsn(hsn string, tsn string) (entity.Car, entity.Haendler) {
+func (carRepository *carRepositoryImpl) GetByHsnTsn(hsn string, tsn string) (entity.Car, entity.Haendler, error) {
 	var car entity.Car
 	var haendler entity.Haendler
-	err := carRepository.DB.Where("hsn = ?", hsn).First(&haendler).Error
-	exception.PanicLogging(err)
-	err = carRepository.DB.Where("tsn = ? AND haendler_id = ?", tsn, haendler.Id).First(&car).Error
-	exception.PanicLogging(err)
-	return car, haendler
+	result := carRepository.DB.Where("hsn = ?", hsn).First(&haendler)
+	result = carRepository.DB.Where("tsn = ? AND haendler_id = ?", tsn, haendler.Id).First(&car)
+	if result.RowsAffected == 0 {
+		return entity.Car{}, entity.Haendler{}, errors.New("Not Found")
+	}
+	return car, haendler, nil
 }
 
-func (carRepository *carRepositoryImpl) GetByHsn(hsn string) entity.Haendler {
+func (carRepository *carRepositoryImpl) GetByHsn(hsn string) (entity.Haendler, error) {
 	var haendler entity.Haendler
-	err := carRepository.DB.Where("hsn = ?", hsn).Find(&haendler).Error
-	exception.PanicLogging(err)
-	return haendler
+	result := carRepository.DB.Where("hsn = ?", hsn).Find(&haendler)
+	if result.RowsAffected == 0 {
+		return entity.Haendler{}, errors.New("Not Found")
+	}
+	return haendler, nil
 }
 
 func (carRepository *carRepositoryImpl) Create(hsn string, tsn string, name string, haendlerName string) {
