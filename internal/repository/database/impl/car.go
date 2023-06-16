@@ -2,6 +2,7 @@ package impl
 
 import (
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/marcleonschulz/carSearchApi/entity"
 	"github.com/marcleonschulz/carSearchApi/exception"
@@ -21,6 +22,7 @@ func (carRepository *carRepositoryImpl) GetByHsnTsn(hsn string, tsn string) (ent
 	var car entity.Car
 	var haendler entity.Haendler
 	result := carRepository.DB.Where("hsn = ?", hsn).First(&haendler)
+	fmt.Println(hsn)
 	result = carRepository.DB.Where("tsn = ? AND haendler_id = ?", tsn, haendler.Id).First(&car)
 	if result.RowsAffected == 0 {
 		return entity.Car{}, entity.Haendler{}, errors.New("Not Found")
@@ -41,17 +43,17 @@ func (carRepository *carRepositoryImpl) Create(hsn string, tsn string, name stri
 	var car entity.Car
 	var haendler entity.Haendler
 
-	err := carRepository.DB.Where("name = ?", haendlerName).First(&haendler).Error
-	if err != nil {
+	result := carRepository.DB.Where("name = ?", haendlerName).First(&haendler)
+	if result.RowsAffected == 0 {
 		haendler = entity.Haendler{
 			Id:   uuid.New(),
 			Name: haendlerName,
 			Hsn:  hsn,
 		}
-		err = carRepository.DB.Create(&haendler).Error
+		err := carRepository.DB.Create(&haendler).Error
 		exception.PanicLogging(err)
 	}
-	err = carRepository.DB.Where("haendler_id = ? AND tsn = ?", haendler.Id, tsn).First(&car).Error
+	err := carRepository.DB.Where("haendler_id = ? AND tsn = ?", haendler.Id, tsn).First(&car).Error
 	if err != nil {
 		car = entity.Car{
 			Id:         uuid.New(),
@@ -62,5 +64,7 @@ func (carRepository *carRepositoryImpl) Create(hsn string, tsn string, name stri
 		//create car with the association to the haendler
 		err = carRepository.DB.Model(&haendler).Association("Cars").Append(&car)
 		exception.PanicLogging(err)
+	} else {
+		exception.PanicLogging(errors.New("Car already exists"))
 	}
 }
