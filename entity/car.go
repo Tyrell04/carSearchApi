@@ -19,6 +19,13 @@ type Car struct {
 	HaendlerId uuid.UUID `gorm:"column:haendler_id;type:varchar(36)"`
 }
 
+type CarCreateBulk struct {
+	Tsn      string
+	Hsn      string
+	Name     string
+	Haendler string
+}
+
 func (Haendler) TableName() string {
 	return "haendler"
 }

@@ -25,3 +25,7 @@ func (carService *carServiceImpl) Create(hsn string, tsn string, name string, ha
 func (carService *carServiceImpl) GetByHsn(hsn string) (entity.Haendler, error) {
 	return carService.CarRepository.GetByHsn(hsn)
 }
+
+func (carService *carServiceImpl) CreateCarBulk(cars []entity.CarCreateBulk) error {
+	return carService.CarRepository.CreateCarBulk(cars)
+}

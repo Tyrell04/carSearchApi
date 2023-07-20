@@ -16,3 +16,7 @@ type HaendlerResponse struct {
 	Name string `json:"name"`
 	Hsn  string `json:"hsn"`
 }
+
+type CarBulkRequest struct {
+	Cars []CarModel `json:"cars"`
+}

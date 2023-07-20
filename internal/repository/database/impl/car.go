@@ -39,6 +39,40 @@ func (carRepository *carRepositoryImpl) GetByHsn(hsn string) (entity.Haendler, e
 	return haendler, nil
 }
 
+func (carRepository *carRepositoryImpl) CreateCarBulk(cars []entity.CarCreateBulk) error {
+	var haendler entity.Haendler
+	var carList []entity.Car
+	var dbCar entity.Car
+	for _, car := range cars {
+		result := carRepository.DB.Where("name = ?", car.Name).First(&haendler)
+		if result.RowsAffected == 0 {
+			haendler = entity.Haendler{
+				Id:   uuid.New(),
+				Name: car.Name,
+				Hsn:  car.Hsn,
+			}
+			err := carRepository.DB.Create(&haendler).Error
+			exception.PanicLogging(err)
+		}
+		err := carRepository.DB.Where("haendler_id = ? AND tsn = ?", haendler.Id, car.Tsn).First(&dbCar).Error
+		if err != nil {
+			dbCar = entity.Car{
+				Id:         uuid.New(),
+				HaendlerId: haendler.Id,
+				Tsn:        car.Tsn,
+				Name:       car.Name,
+			}
+			//create car with the association to the haendler
+			err = carRepository.DB.Model(&haendler).Association("Cars").Append(&dbCar)
+			exception.PanicLogging(err)
+		} else {
+			exception.PanicLogging(errors.New("Car already exists"))
+		}
+		carList = append(carList, dbCar)
+	}
+	return nil
+}
+
 func (carRepository *carRepositoryImpl) Create(hsn string, tsn string, name string, haendlerName string) {
 	var car entity.Car
 	var haendler entity.Haendler
