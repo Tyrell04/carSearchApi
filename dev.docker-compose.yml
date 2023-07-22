@@ -13,8 +13,3 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
-    networks:
-      - dev
-networks:
-    dev:
-        driver: bridge

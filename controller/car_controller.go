@@ -1,8 +1,11 @@
 package controller
 
 import (
+	"encoding/csv"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/marcleonschulz/carSearchApi/config"
+	"github.com/marcleonschulz/carSearchApi/entity"
 	"github.com/marcleonschulz/carSearchApi/exception"
 	"github.com/marcleonschulz/carSearchApi/internal/middleware"
 	"github.com/marcleonschulz/carSearchApi/pkg/models"
@@ -21,6 +24,7 @@ type CarController struct {
 func (carController *CarController) Route(app *fiber.App) {
 	app.Get("/car/:hsn/:tsn", carController.GetByHsnTsn)
 	app.Post("/car", middleware.AuthenticateRoles("admin", carController.Config.Get()), carController.Create)
+	app.Post("/car/bulk", middleware.AuthenticateRoles("admin", carController.Config.Get()), carController.CreateCarBulk)
 }
 
 func (carController *CarController) GetByHsnTsn(c *fiber.Ctx) error {
@@ -53,4 +57,29 @@ func (carController *CarController) GetByHsn(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"haendler": haendler.ToResponse(),
 	})
+}
+
+func (carController *CarController) CreateCarBulk(c *fiber.Ctx) error {
+	cars := []entity.CarCreateBulk{}
+
+	file, err := c.FormFile("file")
+	exception.PanicLogging(err)
+	f, err := file.Open()
+	exception.PanicLogging(err)
+	defer f.Close()
+	exception.PanicLogging(err)
+	lines, err := csv.NewReader(f).ReadAll()
+	exception.PanicLogging(err)
+
+	for _, line := range lines {
+		cars = append(cars, entity.CarCreateBulk{
+			Hsn:      line[0],
+			Tsn:      line[1],
+			Name:     line[2],
+			Haendler: line[3],
+		})
+		fmt.Print(line[0], line[1], line[2], line[3], "\n")
+	}
+	//carController.CarService.CreateCarBulk(cars)
+	return c.JSON(fiber.Map{"message": "Car created successfully!"})
 }
