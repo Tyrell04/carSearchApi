@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/csv"
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/marcleonschulz/carSearchApi/config"
 	"github.com/marcleonschulz/carSearchApi/entity"
@@ -61,7 +60,6 @@ func (carController *CarController) GetByHsn(c *fiber.Ctx) error {
 
 func (carController *CarController) CreateCarBulk(c *fiber.Ctx) error {
 	cars := []entity.CarCreateBulk{}
-
 	file, err := c.FormFile("file")
 	exception.PanicLogging(err)
 	f, err := file.Open()
@@ -74,12 +72,11 @@ func (carController *CarController) CreateCarBulk(c *fiber.Ctx) error {
 	for _, line := range lines {
 		cars = append(cars, entity.CarCreateBulk{
 			Hsn:      line[0],
-			Tsn:      line[1],
-			Name:     line[2],
-			Haendler: line[3],
+			Haendler: line[1],
+			Tsn:      line[2],
+			Name:     line[3],
 		})
-		fmt.Print(line[0], line[1], line[2], line[3], "\n")
 	}
-	//carController.CarService.CreateCarBulk(cars)
+	carController.CarService.CreateCarBulk(cars)
 	return c.JSON(fiber.Map{"message": "Car created successfully!"})
 }
