@@ -28,7 +28,7 @@ func (controller *UserController) Route(app *fiber.App) {
 func (controller *UserController) Get(c *fiber.Ctx) error {
 	email := c.Locals("email").(string)
 	user := controller.UserService.GetByEmail(email)
-	return c.JSON(user.ToResponse())
+	return c.Status(200).JSON(user.ToResponse())
 }
 
 func (controller *UserController) Create(c *fiber.Ctx) error {
@@ -39,7 +39,7 @@ func (controller *UserController) Create(c *fiber.Ctx) error {
 		panic(exception.UnauthorizedError{Message: "User key is not valid!"})
 	}
 	controller.UserService.Create(request.Username, request.Password, request.Email, request.Roles)
-	return c.JSON(fiber.Map{"message": "User created successfully!"})
+	return c.Status(200).JSON(fiber.Map{"message": "User created successfully!"})
 }
 
 func (controller UserController) Authentication(c *fiber.Ctx) error {

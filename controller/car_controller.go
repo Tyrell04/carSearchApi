@@ -9,6 +9,7 @@ import (
 	"github.com/marcleonschulz/carSearchApi/internal/middleware"
 	"github.com/marcleonschulz/carSearchApi/pkg/models"
 	"github.com/marcleonschulz/carSearchApi/services"
+	"mime/multipart"
 )
 
 func NewCarController(carService *services.CarService, config config.Impl) *CarController {
@@ -33,7 +34,7 @@ func (carController *CarController) GetByHsnTsn(c *fiber.Ctx) error {
 	if err != nil {
 		panic(exception.NotFoundError{Message: err.Error()})
 	}
-	return c.JSON(fiber.Map{
+	return c.Status(200).JSON(fiber.Map{
 		"car":      car.ToResponse(),
 		"haendler": haendler.ToResponse(),
 	})
@@ -44,7 +45,7 @@ func (carController *CarController) Create(c *fiber.Ctx) error {
 	err := c.BodyParser(car)
 	exception.PanicLogging(err)
 	carController.CarService.Create(car.Hsn, car.Tsn, car.Name, car.HaendlerName)
-	return c.JSON(fiber.Map{"message": "Car created successfully!"})
+	return c.Status(200).JSON(fiber.Map{"message": "Car created successfully!"})
 }
 
 func (carController *CarController) GetByHsn(c *fiber.Ctx) error {
@@ -53,7 +54,7 @@ func (carController *CarController) GetByHsn(c *fiber.Ctx) error {
 	if err != nil {
 		panic(exception.NotFoundError{Message: err.Error()})
 	}
-	return c.JSON(fiber.Map{
+	return c.Status(200).JSON(fiber.Map{
 		"haendler": haendler.ToResponse(),
 	})
 }
@@ -64,7 +65,12 @@ func (carController *CarController) CreateCarBulk(c *fiber.Ctx) error {
 	exception.PanicLogging(err)
 	f, err := file.Open()
 	exception.PanicLogging(err)
-	defer f.Close()
+	defer func(f multipart.File) {
+		err := f.Close()
+		if err != nil {
+			exception.PanicLogging(err)
+		}
+	}(f)
 	exception.PanicLogging(err)
 	lines, err := csv.NewReader(f).ReadAll()
 	exception.PanicLogging(err)
@@ -77,6 +83,7 @@ func (carController *CarController) CreateCarBulk(c *fiber.Ctx) error {
 			Name:     line[3],
 		})
 	}
-	carController.CarService.CreateCarBulk(cars)
-	return c.JSON(fiber.Map{"message": "Car created successfully!"})
+	err = carController.CarService.CreateCarBulk(cars)
+	exception.PanicLogging(err)
+	return c.Status(200).JSON(fiber.Map{"message": "Car created successfully!"})
 }
