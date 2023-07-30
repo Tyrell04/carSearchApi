@@ -8,6 +8,7 @@ import (
 	"github.com/marcleonschulz/carSearchApi/internal/repository/database"
 	"github.com/marcleonschulz/carSearchApi/pkg/helper"
 	"gorm.io/gorm"
+	"strings"
 )
 
 func NewCarRepositoryImpl(DB *gorm.DB) database.CarRepository {
@@ -21,6 +22,8 @@ type carRepositoryImpl struct {
 func (carRepository *carRepositoryImpl) GetByHsnTsn(hsn string, tsn string) (entity.Car, entity.Haendler, error) {
 	var car entity.Car
 	var haendler entity.Haendler
+	strings.ToUpper(hsn)
+	strings.ToUpper(tsn)
 	result := carRepository.DB.Where("hsn = ?", hsn).First(&haendler)
 	fmt.Println(hsn)
 	result = carRepository.DB.Where("tsn = ? AND hsn = ?", tsn, haendler.Hsn).First(&car)
@@ -32,6 +35,7 @@ func (carRepository *carRepositoryImpl) GetByHsnTsn(hsn string, tsn string) (ent
 
 func (carRepository *carRepositoryImpl) GetByHsn(hsn string) (entity.Haendler, error) {
 	var haendler entity.Haendler
+	strings.ToUpper(hsn)
 	result := carRepository.DB.Where("hsn = ?", hsn).Find(&haendler)
 	if result.RowsAffected == 0 {
 		return entity.Haendler{}, errors.New("Not Found")
