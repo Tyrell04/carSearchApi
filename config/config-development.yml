@@ -2,8 +2,10 @@ cors:
   allowOrigins: "*"
 server:
   port: 8080
+  user_enabled: true
+  user_key: ""
 database:
-  host: localhost
+  host: postgres
   port: 5432
   user: postgres
   password: postgres
@@ -12,17 +14,6 @@ database:
   maxIdleConns: 15
   maxOpenConns: 100
   connMaxLifetime: 5
-redis:
-  host: localhost
-  port: 6379
-  password: password
-  db: 0
-  dialTimeout: 5
-  readTimeout: 5
-  writeTimeout: 5
-  poolSize: 10
-  poolTimeout: 15
-  idleCheckFrequency: 500
 jwt:
   secret: "mySecretKey"
   access_token_expire_duration: 1000

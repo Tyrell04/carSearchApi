@@ -5,6 +5,7 @@ type UserModel struct {
 	Email    string   `json:"email"`
 	Password string   `json:"password"`
 	Roles    []string `json:"roles"`
+	UserKey  string   `json:"user_key"`
 }
 
 type UserResponse struct {

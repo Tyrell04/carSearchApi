@@ -35,6 +35,9 @@ func (controller *UserController) Create(c *fiber.Ctx) error {
 	var request models.UserModel
 	err := c.BodyParser(&request)
 	exception.PanicLogging(err)
+	if !controller.Config.Get().Server.UserEnabled && controller.Config.Get().Server.UserKey != request.UserKey {
+		panic(exception.UnauthorizedError{Message: "User key is not valid!"})
+	}
 	controller.UserService.Create(request.Username, request.Password, request.Email, request.Roles)
 	return c.JSON(fiber.Map{"message": "User created successfully!"})
 }

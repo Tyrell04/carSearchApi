@@ -1,28 +1,10 @@
 version: "3"
 
 services:
-  api:
-    build: .
-    ports:
-      - "8080:8000"
-  redis:
-    image: redis:alpine
-    container_name: redis
-    restart: always
-    ports:
-      - "6379:6379"
-    volumes:
-      - ./data/redis:/data
-    environment:
-      REDIS_PASSWORD: password
-    networks:
-      - production
   postgres:
     image: postgres:alpine
     container_name: postgres
     restart: always
-    ports:
-      - "5432:5432"
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     environment:
@@ -31,6 +13,15 @@ services:
       POSTGRES_DB: postgres
     networks:
       - production
+  api:
+    build: .
+    restart: always
+    depends_on:
+      - postgres
+    networks:
+      - production
+    ports:
+      - "8080:8080"
 networks:
   production:
     driver: bridge

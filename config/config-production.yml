@@ -1,0 +1,19 @@
+cors:
+  allowOrigins: "*"
+server:
+  port: 8080
+  user_enabled: false
+  user_key: "test"
+database:
+  host: postgres
+  port: 5432
+  user: postgres
+  password: postgres
+  dbName: postgres
+  sslMode: disable
+  maxIdleConns: 15
+  maxOpenConns: 100
+  connMaxLifetime: 5
+jwt:
+  secret: ""
+  access_token_expire_duration: 1000
