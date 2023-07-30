@@ -1,22 +1,20 @@
 package entity
 
 import (
-	"github.com/google/uuid"
 	"github.com/marcleonschulz/carSearchApi/pkg/models"
 )
 
 type Haendler struct {
-	Id   uuid.UUID `gorm:"primaryKey;column:haendler_id;type:varchar(36)"`
-	Name string    `gorm:"column:name;type:varchar(100)"`
-	Hsn  string    `gorm:"column:hsn;type:varchar(10)"`
-	Cars []Car     `gorm:"ForeignKey:HaendlerId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Name string `gorm:"column:name;type:varchar(150)"`
+	Hsn  string `gorm:"primaryKey;column:hsn;type:varchar(10)"`
+	Cars []Car  `gorm:"ForeignKey:hsn;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 type Car struct {
-	Id         uuid.UUID `gorm:"primaryKey;column:car_id;type:varchar(36)"`
-	Tsn        string    `gorm:"column:tsn;type:varchar(10)"`
-	Name       string    `gorm:"column:name;type:varchar(100)"`
-	HaendlerId uuid.UUID `gorm:"column:haendler_id;type:varchar(36)"`
+	Id   uint   `gorm:"primaryKey;column:id;type:int(11)"`
+	Tsn  string `gorm:"column:tsn;type:varchar(10)"`
+	Name string `gorm:"column:name;type:varchar(150)"`
+	Hsn  string `gorm:"column:hsn;type:varchar(10)"`
 }
 
 type CarCreateBulk struct {
