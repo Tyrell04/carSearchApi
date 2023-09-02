@@ -7,8 +7,8 @@ import (
 	"github.com/marcleonschulz/carSearchApi/config"
 	"github.com/marcleonschulz/carSearchApi/controller"
 	"github.com/marcleonschulz/carSearchApi/exception"
-	"github.com/marcleonschulz/carSearchApi/internal/repository/database"
-	repository "github.com/marcleonschulz/carSearchApi/internal/repository/database/impl"
+	"github.com/marcleonschulz/carSearchApi/internal/repository"
+	"github.com/marcleonschulz/carSearchApi/internal/repository/impl"
 	services "github.com/marcleonschulz/carSearchApi/services/impl"
 	"log"
 	"os"
@@ -16,7 +16,7 @@ import (
 
 func main() {
 	cfg := config.New().Get()
-	database.InitDb(&cfg)
+	repository.InitDb(&cfg)
 	logFile, err := os.OpenFile("log", os.O_APPEND|os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		log.Panic(err)
@@ -31,8 +31,8 @@ func main() {
 	log.Println("Logging to custom file")
 
 	// register repositories
-	userRepository := repository.NewUserRepositoryImpl(database.GetDb())
-	carRepository := repository.NewCarRepositoryImpl(database.GetDb())
+	userRepository := impl.NewUserRepositoryImpl(repository.GetDb())
+	carRepository := impl.NewCarRepositoryImpl(repository.GetDb())
 
 	// register services
 	userService := services.NewUserServiceImpl(&userRepository)

@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"github.com/marcleonschulz/carSearchApi/entity"
 	"github.com/marcleonschulz/carSearchApi/exception"
-	"github.com/marcleonschulz/carSearchApi/internal/repository/database"
+	"github.com/marcleonschulz/carSearchApi/internal/repository"
 	"github.com/marcleonschulz/carSearchApi/pkg/helper"
 	"gorm.io/gorm"
 	"strings"
 )
 
-func NewCarRepositoryImpl(DB *gorm.DB) database.CarRepository {
+func NewCarRepositoryImpl(DB *gorm.DB) repository.CarRepository {
 	return &carRepositoryImpl{DB: DB}
 }
 
@@ -46,10 +46,7 @@ func (carRepository *carRepositoryImpl) GetByHsn(hsn string) (entity.Haendler, e
 func (carRepository *carRepositoryImpl) CreateCarBulk(cars []entity.CarCreateBulk) error {
 	var dbHaendler []entity.Haendler
 	var haendlerHsn []string
-	var carTsn []string
-	var addCars []entity.Car
 	err := carRepository.DB.Model(&entity.Haendler{}).Pluck("hsn", &haendlerHsn).Error
-	err = carRepository.DB.Model(&entity.Car{}).Pluck("tsn", &carTsn).Error
 	exception.PanicLogging(err)
 	for _, car := range cars {
 		if !helper.BinaryFindString(haendlerHsn, car.Hsn) {
@@ -59,33 +56,31 @@ func (carRepository *carRepositoryImpl) CreateCarBulk(cars []entity.CarCreateBul
 			})
 			haendlerHsn = append(haendlerHsn, car.Hsn)
 		}
-		if len(dbHaendler) > 1000 {
-			err = carRepository.DB.Create(&dbHaendler).Error
-			exception.PanicLogging(err)
-			dbHaendler = []entity.Haendler{}
-		}
 	}
-	if len(dbHaendler) > 0 {
-		err = carRepository.DB.Create(&dbHaendler).Error
-		exception.PanicLogging(err)
-	}
+	err = carRepository.DB.Create(&dbHaendler).Error
 	exception.PanicLogging(err)
+	var result []entity.Car
+	err = carRepository.DB.Table("car").Select("tsn", "hsn").Find(&result).Error
+	exception.PanicLogging(err)
+	var createCars []entity.Car
 	for _, car := range cars {
-		addCars = append(addCars, entity.Car{
-			Hsn:  car.Hsn,
-			Tsn:  car.Tsn,
-			Name: car.Name,
-		})
-		if len(addCars) > 1000 {
-			err = carRepository.DB.Create(&addCars).Error
-			exception.PanicLogging(err)
-			addCars = []entity.Car{}
+		isCar := false
+		for _, dbCars := range result {
+			if car.Hsn == dbCars.Hsn && car.Tsn == dbCars.Tsn {
+				isCar = true
+				break
+			}
+		}
+		if isCar == false {
+			createCars = append(createCars, entity.Car{
+				Hsn:  car.Hsn,
+				Tsn:  car.Tsn,
+				Name: car.Name,
+			})
 		}
 	}
-	if len(addCars) > 0 {
-		err = carRepository.DB.Create(&addCars).Error
-		exception.PanicLogging(err)
-	}
+	err = carRepository.DB.Create(&createCars).Error
+	exception.PanicLogging(err)
 	return nil
 }
 

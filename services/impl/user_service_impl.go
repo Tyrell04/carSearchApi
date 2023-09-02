@@ -4,18 +4,18 @@ import (
 	"context"
 	"github.com/marcleonschulz/carSearchApi/entity"
 	"github.com/marcleonschulz/carSearchApi/exception"
-	"github.com/marcleonschulz/carSearchApi/internal/repository/database"
+	"github.com/marcleonschulz/carSearchApi/internal/repository"
 	"github.com/marcleonschulz/carSearchApi/internal/utils"
 	"github.com/marcleonschulz/carSearchApi/pkg/models"
 	"github.com/marcleonschulz/carSearchApi/services"
 )
 
-func NewUserServiceImpl(userRepository *database.UserRepository) services.UserService {
+func NewUserServiceImpl(userRepository *repository.UserRepository) services.UserService {
 	return &userServiceImpl{UserRepository: *userRepository}
 }
 
 type userServiceImpl struct {
-	database.UserRepository
+	repository.UserRepository
 }
 
 func (userService *userServiceImpl) Create(username string, password string, email string, roles []string) {

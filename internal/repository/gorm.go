@@ -1,4 +1,4 @@
-package database
+package repository
 
 import (
 	"fmt"
@@ -19,7 +19,9 @@ func InitDb(cfg *config.Config) {
 		cfg.Database.Host, cfg.Database.User, cfg.Database.Password,
 		cfg.Database.Name, cfg.Database.Port, cfg.Database.SSLMode)
 
-	dbClient, err = gorm.Open(postgres.Open(cnn), &gorm.Config{})
+	dbClient, err = gorm.Open(postgres.Open(cnn), &gorm.Config{
+		CreateBatchSize: 1000,
+	})
 
 	sqlDb, _ := dbClient.DB()
 	err = sqlDb.Ping()
@@ -36,12 +38,4 @@ func InitDb(cfg *config.Config) {
 
 func GetDb() *gorm.DB {
 	return dbClient
-}
-
-func CloseDb() {
-	con, _ := dbClient.DB()
-	err := con.Close()
-	if err != nil {
-		log.Fatal("Error while shutdown: ", err)
-	}
 }

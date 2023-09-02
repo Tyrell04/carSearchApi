@@ -2,16 +2,16 @@ package impl
 
 import (
 	"github.com/marcleonschulz/carSearchApi/entity"
-	"github.com/marcleonschulz/carSearchApi/internal/repository/database"
+	"github.com/marcleonschulz/carSearchApi/internal/repository"
 	"github.com/marcleonschulz/carSearchApi/services"
 )
 
-func NewCarServiceImpl(carRepository *database.CarRepository) services.CarService {
+func NewCarServiceImpl(carRepository *repository.CarRepository) services.CarService {
 	return &carServiceImpl{CarRepository: *carRepository}
 }
 
 type carServiceImpl struct {
-	database.CarRepository
+	repository.CarRepository
 }
 
 func (carService *carServiceImpl) GetByHsnTsn(hsn string, tsn string) (entity.Car, entity.Haendler, error) {

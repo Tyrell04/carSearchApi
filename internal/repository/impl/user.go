@@ -6,12 +6,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/marcleonschulz/carSearchApi/entity"
 	"github.com/marcleonschulz/carSearchApi/exception"
-	"github.com/marcleonschulz/carSearchApi/internal/repository/database"
+	"github.com/marcleonschulz/carSearchApi/internal/repository"
 	"github.com/marcleonschulz/carSearchApi/internal/utils"
 	"gorm.io/gorm"
 )
 
-func NewUserRepositoryImpl(DB *gorm.DB) database.UserRepository {
+func NewUserRepositoryImpl(DB *gorm.DB) repository.UserRepository {
 	return &userRepositoryImpl{DB: DB}
 }
 
