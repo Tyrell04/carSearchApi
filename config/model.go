@@ -10,9 +10,8 @@ type Config struct {
 }
 
 type Server struct {
-	Port        string `mapstructure:"port"`
-	UserEnabled bool   `mapstructure:"user_enabled"`
-	UserKey     string `mapstructure:"user_key"`
+	Port    string `mapstructure:"port"`
+	UserKey string `mapstructure:"user_key"`
 }
 
 type CorsConfig struct {
