@@ -22,6 +22,7 @@ type CarController struct {
 }
 
 func (carController *CarController) Route(app *fiber.App) {
+	app.Get("car/:hsn", carController.GetByHsn)
 	app.Get("/car/:hsn/:tsn", carController.GetByHsnTsn)
 	app.Post("/car", middleware.AuthenticateRoles("admin", carController.Config.Get()), carController.Create)
 	app.Post("/car/bulk", middleware.AuthenticateRoles("admin", carController.Config.Get()), carController.CreateCarBulk)
@@ -60,7 +61,7 @@ func (carController *CarController) GetByHsn(c *fiber.Ctx) error {
 }
 
 func (carController *CarController) CreateCarBulk(c *fiber.Ctx) error {
-	cars := []entity.CarCreateBulk{}
+	var cars []entity.CarCreateBulk
 	file, err := c.FormFile("file")
 	exception.PanicLogging(err)
 	f, err := file.Open()

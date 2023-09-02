@@ -20,6 +20,8 @@ services:
       - postgres
     networks:
       - production
+    volumes:
+      - ./config/config-production.yml:config/config-production.yml
     ports:
       - "8080:8080"
 networks:
